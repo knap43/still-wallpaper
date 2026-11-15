@@ -18,8 +18,10 @@ An optional effect can accompany the slide:
 Each effect peaks halfway through the slide and fades out as it settles, so
 the wallpaper always ends exactly as it began.
 
-Desktop icons and Liquid Glass desktop items still move with their workspace,
-because they belong to it.
+Liquid Glass desktop items (the glass clock and widgets) stay in place with the
+wallpaper. If Liquid Glass is set to show them on the first workspace only,
+they belong to that workspace and slide with it instead. Desktop icons
+(such as those of Desktop Icons NG) slide with their workspace.
 
 ## Install
 

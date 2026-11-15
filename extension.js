@@ -1,4 +1,5 @@
 import Clutter from 'gi://Clutter';
+import GLib from 'gi://GLib';
 import Graphene from 'gi://Graphene';
 import Meta from 'gi://Meta';
 import Shell from 'gi://Shell';
@@ -40,6 +41,7 @@ class StillLayer {
 
         const background = new Meta.BackgroundGroup();
         this._actor.add_child(background);
+        this._wallpaper = background;
         this._bgManager = new Background.BackgroundManager({
             container: background,
             monitorIndex: monitor.index,
@@ -61,12 +63,51 @@ class StillLayer {
         }
 
         group.insert_child_below(this._actor, null);
-        this._actor.connect('destroy', () => this._bgManager.destroy());
+
+        // Other extensions decorate the workspace pictures when the group is
+        // added to the stage; look at what they added just before it is drawn.
+        const laters = global.compositor.get_laters();
+        let laterId = laters.add(Meta.LaterType.BEFORE_REDRAW, () => {
+            laterId = 0;
+            this._adoptDesktopItems();
+            return GLib.SOURCE_REMOVE;
+        });
+
+        this._actor.connect('destroy', () => {
+            if (laterId)
+                laters.remove(laterId);
+            this._bgManager.destroy();
+        });
 
         if (effect !== 'none') {
             this._start = group.progress;
             group.connectObject('notify::progress', () => this._update(), this._actor);
         }
+    }
+
+    // Liquid Glass puts a copy of its desktop items (such as the clock) on
+    // every workspace's wallpaper, so that they slide along with it. When every
+    // workspace carries them, they belong to the desktop rather than to any one
+    // workspace: keep one copy on the still wallpaper and drop the rest. When
+    // only some do (the items are shown on the first workspace only), they
+    // belong to that workspace and keep sliding with it.
+    _adoptDesktopItems() {
+        const decorations = this._group._workspaceGroups.map(({_background: background}) =>
+            background?.get_children().filter(child =>
+                child instanceof Clutter.Clone &&
+                !(child.source instanceof Meta.WindowActor)) ?? []);
+
+        if (decorations.length === 0 || decorations.some(list => list.length === 0))
+            return;
+
+        let below = this._wallpaper;
+        for (const clone of decorations[0]) {
+            clone.get_parent().remove_child(clone);
+            this._actor.insert_child_above(clone, below);
+            below = clone;
+        }
+        for (const list of decorations.slice(1))
+            list.forEach(clone => clone.destroy());
     }
 
     // How far into the current workspace-to-workspace step the slide is, as
