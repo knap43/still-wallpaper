@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.still-wallpaper" path="/org/gnome/shell/extensions/still-wallpaper/">
+    <key name="effect" type="s">
+      <choices>
+        <choice value="none"/>
+        <choice value="dim"/>
+        <choice value="blur"/>
+        <choice value="zoom"/>
+        <choice value="drift"/>
+      </choices>
+      <default>'none'</default>
+      <summary>Wallpaper effect during the slide</summary>
+      <description>What happens to the still wallpaper while windows slide: nothing, darken, blur, zoom in, or drift gently along with the windows. Every effect fades out as the slide settles, so the wallpaper ends exactly as it began.</description>
+    </key>
+    <key name="strength" type="d">
+      <default>0.5</default>
+      <range min="0.05" max="1.0"/>
+      <summary>Effect strength</summary>
+      <description>How pronounced the effect is at the middle of the slide, from 0.05 to 1.</description>
+    </key>
+  </schema>
+</schemalist>

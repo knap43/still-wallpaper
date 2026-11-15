@@ -1,0 +1,8 @@
+{
+  "uuid": "still-wallpaper@knap43.github.io",
+  "name": "Still Wallpaper",
+  "description": "Keeps the wallpaper still while switching workspaces, so only the windows slide across it. An optional effect (dim, blur, zoom or drift) can accompany the slide.",
+  "shell-version": ["49", "50", "51"],
+  "settings-schema": "org.gnome.shell.extensions.still-wallpaper",
+  "url": "https://github.com/knap43/still-wallpaper"
+}
